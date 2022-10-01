@@ -1,0 +1,210 @@
+	
+#include <DHT.h>;
+
+
+//I2C LCD:
+
+
+#include <LiquidCrystal_I2C.h>
+
+
+#include <Wire.h>
+
+
+
+
+
+LiquidCrystal_I2C lcd(0x3F,16,2); // set the LCD address to 0x27 for a 16 chars and 2 line display
+
+
+ 
+
+
+//Constants
+
+
+#define DHTPIN 2     // what pin we're connected to
+
+
+#define DHTTYPE DHT11   // DHT 11
+
+
+DHT dht(DHTPIN, DHTTYPE); //// Initialize DHT sensor for normal 16mhz Arduino
+
+
+
+
+
+//Variables
+
+
+//int chk;
+
+
+int h;  //Stores humidity value
+int t; //Stores temperature value
+int f;
+int Fan = 4;
+int Bulb = 3;
+int Green = 2;
+int Red = 3;
+
+
+
+
+void setup()
+{
+    
+ pinMode(Bulb,OUTPUT);
+ pinMode(Green,OUTPUT);
+ pinMode(Red,OUTPUT);
+ pinMode(Fan,OUTPUT);
+ pinMode(5,OUTPUT);
+ digitalWrite(5,HIGH);
+  Serial.begin(9600);
+
+
+    Serial.println("Temperature and Humidity Sensor Test");
+
+
+    dht.begin();
+
+
+    lcd.init(); //initialize the lcd
+
+
+    lcd.backlight(); //open the backlight
+
+
+
+}
+
+
+
+
+
+void loop()
+
+
+{
+
+
+    //Read data and store it to variables h (humidity) and t (temperature)
+
+
+    // Reading temperature or humidity takes about 250 milliseconds!
+
+
+    h = dht.readHumidity();
+
+
+    t = dht.readTemperature();
+    
+    f = t * (9.0/5.0) + 32.0;
+    
+
+
+   
+
+
+    //Print temp and humidity values to serial monitor
+
+
+    Serial.print("Humidity: ");
+
+
+    Serial.print(h);
+
+
+    Serial.print(" %, Temp: ");
+
+
+    Serial.print(t);
+    Serial.print(f);
+
+    Serial.println(" ° Celsius");
+
+
+       
+
+
+// set the cursor to (0,0):
+
+
+// print from 0 to 9:
+
+
+
+
+
+    lcd.setCursor(0, 0);
+
+
+    lcd.println("Egg Incubator   ");
+
+
+   
+
+
+    lcd.setCursor(0, 1);
+
+
+    lcd.print("T:");
+
+
+    lcd.print(t);
+
+
+    lcd.print("C");
+
+
+
+
+
+    lcd.setCursor(5, 1);
+
+
+    lcd.print(",");
+
+
+    lcd.print(f);
+
+
+    lcd.print("F");
+
+
+     
+
+
+    lcd.setCursor(11, 1);
+
+
+    lcd.print("H:");
+
+
+    lcd.print(h);
+
+
+    lcd.print("%");
+
+    if(t<36)
+  {
+    digitalWrite(Bulb,LOW);
+    digitalWrite(Fan,LOW);
+  }
+
+  if (t>38)
+  {
+    digitalWrite(Bulb,LOW);
+    digitalWrite(Fan,HIGH);
+    digitalWrite(Green,LOW);
+    digitalWrite(Red,HIGH);
+  }
+  else
+  {
+    digitalWrite(Green,HIGH);
+    digitalWrite(Red,LOW);
+  }
+  
+  delay(500);
+}
